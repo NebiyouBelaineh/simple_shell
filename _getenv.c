@@ -6,7 +6,7 @@
 * @name: name of enviornment variable we want to find
 * Return: Enviorment variable key=value string or NULL if it does not exist.
 */
-char *_getenv(const char *name)
+char *_getenv(char *name)
 {
 	unsigned int index = 0;
 	char *token, *temp, *result;

@@ -38,7 +38,7 @@ int _is_number(char *str);
 
 
 /*Environment variable functions*/
-char *_getenv(const char *name);
+char *_getenv(char *name);
 void _printenv(void);
 
 
