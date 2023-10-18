@@ -81,8 +81,7 @@ void handle_errors(char *p_name, int *line_counter, char *command)
 	print_to_terminal(command);
 	print_to_terminal(": ");
 	print_to_terminal("not found");
-	if (isatty(_fileno(stdin)))
-		print_to_terminal("\n");
+	print_to_terminal("\n");
 }
 /**
  * execute_commands - executes builtin commands
