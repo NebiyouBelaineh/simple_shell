@@ -10,20 +10,15 @@ void handle_file_err(char *p_name, int *line_counter, char *filename);
 int main(int ac __attribute__((unused)), char *av[])
 {
 	char *line = NULL, *prompt = "$ ", *p_name = av[0], *arr_tok[100],
-	*f_name = av[1];
+	*file_opener = "simple_shell";
 	int token_ret = 0, index, env_count = 0, *index_ptr = &index,
-	status = 0, *exit_ptr = &status;
+		status = 0, *exit_ptr = &status;
 	static int line_counter = 0, *l_count = &line_counter;
 	size_t len = 0;
 	ssize_t nread = 0;
 
 	while (__environ[env_count] != NULL)
 		env_count++;
-	if (ac >= 2)
-	{
-		return (handle_file(f_name, arr_tok, index_ptr, p_name, l_count,
-		exit_ptr));
-	}
 	while (1)
 	{
 		if (isatty(_fileno(stdin)))
@@ -45,6 +40,13 @@ int main(int ac __attribute__((unused)), char *av[])
 		else if (token_ret == 0)
 		{
 			free(line);
+			if (_strcmp(arr_tok[0], file_opener) == 0 && _strlen(arr_tok[0]) ==
+			_strlen(file_opener))
+			{
+				handle_file(arr_tok[1], arr_tok, index_ptr, p_name, l_count, exit_ptr);
+				free_mem(index_ptr, arr_tok);
+				continue;
+			}
 			handle_var_rp(arr_tok, exit_ptr);
 			execute_commands(arr_tok, index_ptr, p_name, l_count, exit_ptr);
 		}
@@ -61,11 +63,11 @@ int main(int ac __attribute__((unused)), char *av[])
  * @exit_ptr: pointer to the exit status
  * Return: 0 if it succeeds reading the file, 1 otherwise
  */
-int handle_file(char *filename, char **arr_token,
-int *index_ptr, char *p_name, int *line_countptr, int *exit_ptr)
+int handle_file(char *filename, char **arr_token, int *index_ptr, char *p_name,
+int *line_countptr, int *exit_ptr)
 {
-	char file_con[10000], *line_commands[100];
-	int index1, index2, fd, *index_ptr1 = &index1, token_ret;
+	char file_con[10000], *line_cmd[100];
+	int index1 = 0, index2, fd, *index_ptr1 = &index1, token_ret, b_read;
 
 	fd = open(filename, O_RDONLY);
 	if (fd == -1)
@@ -73,30 +75,29 @@ int *index_ptr, char *p_name, int *line_countptr, int *exit_ptr)
 		handle_file_err(p_name, line_countptr, filename);
 		return (1);
 	}
-	if ((read(fd, file_con, sizeof(file_con) - 1)) == -1)
+	b_read = read(fd, file_con, sizeof(file_con) - 1);
+	if (b_read == -1)
 	{
-		perror("Error:read");
+		perror("Error:");
 		return (1);
 	}
-	tokenize_by_delim(file_con, line_commands, index_ptr1, "\n");
-	for (index2 = 0; line_commands[index2] != NULL; index2++)
+	file_con[b_read] = '\0';
+	free_mem(index_ptr, arr_token);
+	tokenize_by_delim(file_con, line_cmd, index_ptr1, "\n");
+	for (index2 = 0; line_cmd[index2] != NULL; index2++)
 	{
-		line_commands[index2][_strcspn(line_commands[index2], "\n")] = 0;
-		if (!cmd_separator(line_commands[index2], p_name, line_countptr,
-		exit_ptr))
+		line_cmd[index2][_strcspn(line_cmd[index2], "\n")] = 0;
+		if (!cmd_separator(line_cmd[index2], p_name, line_countptr, exit_ptr))
 			continue;
-		if (!handle_logical_and(line_commands[index2], p_name, line_countptr,
-		exit_ptr))
+		if (!handle_logical_and(line_cmd[index2], p_name, line_countptr, exit_ptr))
 			continue;
-		if (!handle_logical_or(line_commands[index2], p_name, line_countptr,
-		exit_ptr))
+		if (!handle_logical_or(line_cmd[index2], p_name, line_countptr, exit_ptr))
 			continue;
-		token_ret = tokenize_input(line_commands[index2], arr_token, index_ptr);
-		if (token_ret)
-			free(line_commands[index2]);
-		else if (token_ret == 0)
+		if (tokenize_input(line_cmd[index2], arr_token, index_ptr))
+			free(line_cmd[index2]);
+		else
 		{
-			free(line_commands[index2]);
+			free(line_cmd[index2]);
 			handle_var_rp(arr_token, exit_ptr);
 			execute_commands(arr_token, index_ptr, p_name, line_countptr, exit_ptr);
 		}
