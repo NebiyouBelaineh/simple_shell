@@ -38,8 +38,7 @@ int _isexit(char **arr_token, int *index_ptr, char *p_name, int *line_counter)
 			print_to_terminal("Illegal number");
 			print_to_terminal(": ");
 			print_to_terminal(arr_token[1]);
-			if (isatty(_fileno(stdin)))
-				print_to_terminal("\n");
+			print_to_terminal("\n");
 			free_mem(index_ptr, arr_token);
 			return (1);
 		}
