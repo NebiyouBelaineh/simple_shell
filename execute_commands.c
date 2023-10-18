@@ -36,7 +36,8 @@ int _isexit(char **arr_token, int *index_ptr, char *p_name, int *line_counter)
 			print_to_terminal("Illegal number");
 			print_to_terminal(": ");
 			print_to_terminal(arr_token[1]);
-			print_to_terminal("\n");
+			if (isatty(_fileno(stdin)))
+				print_to_terminal("\n");
 			free_mem(index_ptr, arr_token);
 			return (1);
 		}
@@ -78,7 +79,8 @@ void handle_errors(char *p_name, int *line_counter, char *command)
 	print_to_terminal(command);
 	print_to_terminal(": ");
 	print_to_terminal("not found");
-	print_to_terminal("\n");
+	if (isatty(_fileno(stdin)))
+		print_to_terminal("\n");
 }
 /**
  * execute_commands - executes builtin commands
