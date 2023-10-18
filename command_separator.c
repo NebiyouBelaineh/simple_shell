@@ -92,6 +92,8 @@ int _is_semi_colons(char *str)
 {
 	int index = 0;
 
+	if (_strcmp(str, ";") == 0)
+		return (1);
 	while (str[index] != '\0')
 	{
 		if (str[index] != ' ' && str[index] != '\t' && str[index] != ';')
@@ -120,7 +122,4 @@ void handle_syntax_errors(char *p_name, int *line_counter, char *syntax)
 	print_to_terminal(syntax);
 	print_to_terminal("\" unexpected");
 	print_to_terminal("\n");
-	/**
-	 * sh: 1: Syntax error: ";" unexpected
-	 */
-}
+	}
