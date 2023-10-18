@@ -14,11 +14,18 @@ int tokenize_by_delim(char *str, char *arr_token[], int *index_ptr,
 char *delim)
 {
 	int index = 0;
-	char *token;
+	char *token, *copy;
 
 	if (str[0] == '\n')
 		return (1);
-	token = _strtok(str, delim);
+	copy = malloc(_strlen(str) + 1);
+	if (copy == NULL)
+	{
+		perror("Error: malloc:");
+		return (1);
+	}
+	_strcpy(copy, str);
+	token = _strtok(copy, delim);
 	while (token != NULL) /**/
 	{
 		arr_token[index] = malloc((_strlen(token) * sizeof(char)) + 1);
@@ -30,7 +37,7 @@ char *delim)
 				free(arr_token[index]);
 				arr_token[index] = NULL;
 			}
-			free(str);
+			free(copy);
 		}
 		_strcpy(arr_token[index], token);
 		token = _strtok(NULL, delim);
@@ -38,6 +45,7 @@ char *delim)
 		index++;
 	}
 	arr_token[index] = NULL;
+	free(copy);
 	*index_ptr = index;
 	return (0);
 }
