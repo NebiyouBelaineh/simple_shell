@@ -86,7 +86,7 @@ unsigned int _strspn(char *s, char *accept)
  *
  * Return: pointer 's' or NULL
  */
-char *_strpbrk(char *s, char *accept)
+char *_strpbrk(char *s, const char *accept)
 {
 	int i, j;
 
@@ -134,5 +134,5 @@ char *_strstr(char *haystack, char *needle)
 		if (needle[i + 1] == '\0' && flag_index != -1)
 			return ((haystack + flag_index));
 	}
-	return ('\0');
+	return (NULL);
 }
