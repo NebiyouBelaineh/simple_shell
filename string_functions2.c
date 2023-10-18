@@ -49,7 +49,7 @@ int _strlen(char *s)
 	for (index = 0; s[index] != '\0';)
 		index++;
 
-	return (index); /* i - 1 since we don't count the '\0' character*/
+	return (index);
 }
 
 /**
@@ -59,7 +59,7 @@ int _strlen(char *s)
 * Return: pointer to the tokens each time and NULL when there are no more
 * tokens
 */
-char *_strtok(char *str, const char *delimiters)
+char *_strtok(char *str, char *delimiters)
 {
 	static char *next_str = NULL, *remaining_str;
 
@@ -69,18 +69,18 @@ char *_strtok(char *str, const char *delimiters)
 	if (str == NULL)
 		return (NULL);
 
-	/* str += strspn(str, delimiters); */
+	str += _strspn(str, delimiters);
 
 	if (*str == '\0')
 	{
 		next_str = str;
 		return (NULL);
 	}
-	remaining_str = strpbrk(str, delimiters);
+	remaining_str = _strpbrk(str, delimiters);
 
 	if (remaining_str == NULL)
 	{
-		remaining_str = str + strlen(str);
+		remaining_str = str + _strlen(str);
 		next_str = remaining_str;
 		return (str);
 	}
@@ -144,6 +144,12 @@ char *str_concat(char *s1, char *s2, char *s3)
 		len3++;
 
 	str = malloc((len1 + len2 + len3 + 1) * (sizeof(char)));
+	if (str == NULL)
+	{
+		errno = ENOMEM;
+		perror("Error");
+		return (NULL);
+	}
 
 	if (str == NULL)
 		return (NULL);
