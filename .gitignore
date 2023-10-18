@@ -1,4 +1,8 @@
 hsh*
+sh*
 shell*
-.txt
 test*
+*.txt
+*.zip
+func*
+*.json

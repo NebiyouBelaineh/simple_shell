@@ -7,10 +7,18 @@
  */
 char *find_command(char *command)
 {
-	unsigned int index = 0/* , found_flag = 0 */;
+	unsigned int index = 0 /* , found_flag = 0 */;
 	struct stat st;
-	char *path_dir, *path_var = _getenv("PATH"), *token;
+	char *path_dir, *path_var, *token;
 
+	if (stat(command, &st) == 0)
+	{
+		return (command);
+	}
+	if (command[0] == '.' && command[1] == '/')
+		return (NULL);
+	/*if not full path command, execute the below*/
+	path_var = _getenv(PATH);
 	token = _strtok(path_var, ":");
 
 	while (token != NULL)
@@ -31,5 +39,5 @@ char *find_command(char *command)
 	/* and return*/
 	free(path_var);
 	free(path_dir);
-	return (command);
+	return (NULL);
 }
