@@ -113,4 +113,9 @@ int handle_var_rp(char **arr_token, int *exit_ptr);
 char *num_to_string(int number);
 void support_var_rp(char **arr_token, int index);
 
+
+size_t _getline_support(size_t *length, char buff[],
+char **lineptr);
+int _fileno(FILE *stream);
+
 #endif /*MAIN_H*/
