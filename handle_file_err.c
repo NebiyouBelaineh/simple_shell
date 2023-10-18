@@ -16,5 +16,6 @@ void handle_file_err(char *p_name, int *line_counter, char *filename)
 	print_to_terminal(": ");
 	print_to_terminal("Can't open ");
 	print_to_terminal(filename);
-	print_to_terminal("\n");
+	if (isatty(_fileno(stdin)))
+		print_to_terminal("\n");
 }
