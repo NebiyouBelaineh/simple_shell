@@ -111,7 +111,7 @@ int execute_commands(char *arr_token[], int *index_ptr, char *p_name,
 	if (_strcmp(arr_token[0], "setenv") == 0 && (_strlen(arr_token[0]) ==
 												 _strlen("setenv")))
 	{
-		setenv(arr_token[1], arr_token[2], OVERWRITE);
+		_setenv(arr_token[1], arr_token[2], OVERWRITE);
 		/*Error already handled and printed in _setenv*/
 		free_mem(index_ptr, arr_token);
 		return (0);
@@ -119,7 +119,7 @@ int execute_commands(char *arr_token[], int *index_ptr, char *p_name,
 	if (_strcmp(arr_token[0], "unsetenv") == 0 && (_strlen(arr_token[0]) ==
 												   _strlen("unsetenv")))
 	{
-		unsetenv(arr_token[1]);
+		_unsetenv(arr_token[1]);
 		/*Error already handled and printed in _unsetenv*/
 		free_mem(index_ptr, arr_token);
 		return (0);
