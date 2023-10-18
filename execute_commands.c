@@ -22,6 +22,8 @@ int _isexit(char **arr_token, int *index_ptr, char *p_name, int *line_counter)
 		else if (_is_number(arr_token[1]))
 		{
 			exit_status = _atoi(arr_token[1]);
+			if (exit_status > 256)
+				exit_status = exit_status % 256;
 			free_mem(index_ptr, arr_token);
 			exit(exit_status);
 		}
