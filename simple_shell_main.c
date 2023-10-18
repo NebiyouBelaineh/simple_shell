@@ -26,7 +26,8 @@ int main(int ac __attribute__((unused)), char *av[])
 	}
 	while (1)
 	{
-		print_to_terminal(prompt);
+		if (isatty(_fileno(stdin)))
+			print_to_terminal(prompt);
 		nread = _getline(&line, &len, stdin);
 		if (nread == -1)
 			handle_EOF(line, env_count);
@@ -113,7 +114,8 @@ void handle_EOF(char *line, int env_count)
 {
 	int index = 0;
 
-	print_to_terminal("\n");
+	if (isatty(_fileno(stdin)))
+		print_to_terminal("\n");
 	free(line);
 	line = NULL;
 	while (__environ[index] != NULL)
