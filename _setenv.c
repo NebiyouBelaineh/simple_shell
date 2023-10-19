@@ -33,6 +33,7 @@ int _setenv(char *name, char *value, int overwrite)
 					new_env = str_concat(name, "=", value);
 					_strcpy(__environ[index], new_env);
 					free(new_env);
+					break;
 				}
 				index++;
 			}
