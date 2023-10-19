@@ -42,8 +42,13 @@ size_t _getline_support(size_t *length, char buff[], char **lineptr);
 
 /*Printing functions*/
 void print_to_terminal(char *str);
+void print_to_stderr(char *str);
 int print_num(char c);
 void print_number(int n);
+int print_num_err(char c);
+
+int print_num_err(char c);
+void print_number_err(int n);
 
 void handle_errors(char *p_name, int *line_counter, char *command);
 char *find_command(char *command);
@@ -88,7 +93,7 @@ void support_command_sep(char *command[], char *p_name, int *line_countptr,
 int *exit_ptr);
 
 int _is_space(char *str);
-int _is_cd(char **arr_token);
+int _is_cd(char **arr_token, char *p_name, int *line_counter);
 
 void handle_EOF(char *line, int env_count);
 
@@ -113,7 +118,7 @@ int handle_var_rp(char **arr_token, int *exit_ptr);
 char *num_to_string(int number);
 void support_var_rp(char **arr_token, int index);
 
-
+void handle_cd_err(char **arr_token, char *p_name, int *line_counter);
 size_t _getline_support(size_t *length, char buff[],
 char **lineptr);
 int _fileno(FILE *stream);
