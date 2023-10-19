@@ -9,7 +9,7 @@ void handle_file_err(char *p_name, int *line_counter, char *filename);
  */
 int main(int ac, char *av[])
 {
-	char *line = NULL, *prompt = "$ ", *p_name = av[0], *arr_tok[100],
+	char *line = NULL, *prompt = "$ ", *p_name = av[0], *arr_tok[10000],
 	*f_name = av[1];
 	int token_ret = 0, index, env_count = 0, *index_ptr = &index,
 	status = 0, *exit_ptr = &status;
@@ -28,7 +28,7 @@ int main(int ac, char *av[])
 	{
 		if (isatty(_fileno(stdin)))
 			print_to_terminal(prompt);
-		nread = _getline(&line, &len, stdin);
+		nread = getline(&line, &len, stdin);
 		if (nread == -1)
 			handle_EOF(line, env_count);
 		line_counter++;
@@ -46,7 +46,7 @@ int main(int ac, char *av[])
 		{
 			free(line);
 			handle_var_rp(arr_tok, exit_ptr);
-			execute_commands(arr_tok, index_ptr, p_name, l_count, exit_ptr);
+			*exit_ptr = execute_commands(arr_tok, index_ptr, p_name, l_count, exit_ptr);
 		}
 	}
 	return (0);
@@ -64,14 +64,14 @@ int main(int ac, char *av[])
 int handle_file(char *filename, char **arr_token,
 int *index_ptr, char *p_name, int *line_countptr, int *exit_ptr)
 {
-	char file_con[10000], *line_cmd[100];
+	char file_con[10000], *line_cmd[10000];
 	int index1, index2, fd, *index_ptr1 = &index1, token_ret, b_read;
 
 	fd = open(filename, O_RDONLY);
 	if (fd == -1)
 	{
 		handle_file_err(p_name, line_countptr, filename);
-		return (1);
+		return (2);
 	}
 	b_read = read(fd, file_con, sizeof(file_con));
 	if (b_read == -1)
@@ -144,7 +144,8 @@ int handle_var_rp(char **arr_token, int *exit_ptr)
 
 	for (index = 0; arr_token[index] != NULL; index++)
 	{
-		if (_strcmp(arr_token[index], "$$") == 0)
+		if (_strcmp(arr_token[index], "$$") == 0 && _strlen(arr_token[index]) ==
+		_strlen("$$"))
 		{
 			replacement = num_to_string(pid);
 			free(arr_token[index]);
@@ -153,7 +154,8 @@ int handle_var_rp(char **arr_token, int *exit_ptr)
 			free(replacement);
 			return (1);
 		}
-		else if (_strcmp(arr_token[index], "$?") == 0)
+		else if (_strcmp(arr_token[index], "$?") == 0 && _strlen(arr_token[index]) ==
+		_strlen("$?"))
 		{
 			if (__WIFEXITED(*exit_ptr))
 				exit_status = __WEXITSTATUS(*exit_ptr);
@@ -184,24 +186,19 @@ void support_var_rp(char **arr_token, int index)
 	char *copy, *replacement, *env_var;
 	int index2;
 
-	copy = malloc(_strlen(arr_token[index]) + 1);
-	if (copy == NULL)
-	{
-		errno = ENOMEM;
-		perror("Error");
-		exit(EXIT_FAILURE);
-	}
-	_strcpy(copy, arr_token[index]);
-	replacement = _strpbrk(copy, "$");
+	replacement = _strpbrk(arr_token[index], "$");
 
 	for (index2 = 0; replacement[index2] != '\0'; index2++)
 		replacement[index2] = replacement[index2 + 1];
 	replacement[index2] = '\0';
 	env_var = _getenv(replacement);
-
-	free(arr_token[index]);
+	if (env_var == NULL)
+	{
+		print_to_terminal("$");
+		return;
+	}
 	arr_token[index] = malloc(_strlen(env_var) * sizeof(char) + 1);
 	_strcpy(arr_token[index], env_var);
 	free(env_var);
-	free(copy);
+
 }
