@@ -28,7 +28,7 @@ int main(int ac, char *av[])
 	{
 		if (isatty(_fileno(stdin)))
 			print_to_terminal(prompt);
-		nread = getline(&line, &len, stdin);
+		nread = _getline(&line, &len, stdin);
 		if (nread == -1)
 			handle_EOF(line, env_count);
 		line_counter++;
@@ -157,8 +157,8 @@ int handle_var_rp(char **arr_token, int *exit_ptr)
 		else if (_strcmp(arr_token[index], "$?") == 0 && _strlen(arr_token[index]) ==
 		_strlen("$?"))
 		{
-			if (__WIFEXITED(*exit_ptr))
-				exit_status = __WEXITSTATUS(*exit_ptr);
+			if (WIFEXITED(*exit_ptr))
+				exit_status = WEXITSTATUS(*exit_ptr);
 			replacement = num_to_string(exit_status);
 			free(arr_token[index]);
 			arr_token[index] = malloc(_strlen(replacement) * sizeof(char) + 1);
@@ -183,7 +183,7 @@ int handle_var_rp(char **arr_token, int *exit_ptr)
  */
 void support_var_rp(char **arr_token, int index)
 {
-	char *copy, *replacement, *env_var;
+	char*replacement, *env_var;
 	int index2;
 
 	replacement = _strpbrk(arr_token[index], "$");
