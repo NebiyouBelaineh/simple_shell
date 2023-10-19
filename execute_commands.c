@@ -29,18 +29,18 @@ int _isexit(char **arr_token, int *index_ptr, char *p_name, int *line_counter)
 		}
 		else
 		{
-			print_to_terminal(p_name);
-			print_to_terminal(": ");
-			print_number(*line_counter);
-			print_to_terminal(": ");
-			print_to_terminal(arr_token[0]);
-			print_to_terminal(": ");
-			print_to_terminal("Illegal number");
-			print_to_terminal(": ");
-			print_to_terminal(arr_token[1]);
-			print_to_terminal("\n");
+			print_to_stderr(p_name);
+			print_to_stderr(": ");
+			print_num_err(*line_counter);
+			print_to_stderr(": ");
+			print_to_stderr(arr_token[0]);
+			print_to_stderr(": ");
+			print_to_stderr("Illegal number");
+			print_to_stderr(": ");
+			print_to_stderr(arr_token[1]);
+			print_to_stderr("\n");
 			free_mem(index_ptr, arr_token);
-			return (1);
+			return (2);
 		}
 	}
 	return (0);
@@ -73,14 +73,14 @@ void free_mem(int *index_ptr, char **ptr)
  */
 void handle_errors(char *p_name, int *line_counter, char *command)
 {
-	print_to_terminal(p_name);
-	print_to_terminal(": ");
-	print_number(*line_counter);
-	print_to_terminal(": ");
-	print_to_terminal(command);
-	print_to_terminal(": ");
-	print_to_terminal("not found");
-	print_to_terminal("\n");
+	print_to_stderr(p_name);
+	print_to_stderr(": ");
+	print_num_err(*line_counter);
+	print_to_stderr(": ");
+	print_to_stderr(command);
+	print_to_stderr(": ");
+	print_to_stderr("not found");
+	print_to_stderr("\n");
 }
 /**
  * execute_commands - executes builtin commands
@@ -94,41 +94,39 @@ void handle_errors(char *p_name, int *line_counter, char *command)
 int execute_commands(char *arr_token[], int *index_ptr, char *p_name,
 					 int *line_counter, int *exit_ptr)
 {
-	int isexit_ret = 0;
-
 	if (_strncmp(arr_token[0], "exit", _strlen("exit")) == 0 &&
 		_strlen(arr_token[0]) == _strlen("exit"))
-		isexit_ret = _isexit(arr_token, index_ptr, p_name, line_counter);
-	if (isexit_ret == 1)
+	if (_isexit(arr_token, index_ptr, p_name, line_counter) == 1)
 		return (0);
 	if (_strncmp("env", arr_token[0], _strlen("env")) == 0 &&
 		_strlen(arr_token[0]) == _strlen("env"))
 	{
 		_printenv();
 		free_mem(index_ptr, arr_token);
-		return (0);
+		*exit_ptr = 0;
+		return (*exit_ptr);
 	}
 	if (_strcmp(arr_token[0], "setenv") == 0 && (_strlen(arr_token[0]) ==
 												 _strlen("setenv")))
 	{
-		_setenv(arr_token[1], arr_token[2], OVERWRITE);
+		*exit_ptr = _setenv(arr_token[1], arr_token[2], OVERWRITE);
 		/*Error already handled and printed in _setenv*/
 		free_mem(index_ptr, arr_token);
-		return (0);
+		return (*exit_ptr);
 	}
 	if (_strcmp(arr_token[0], "unsetenv") == 0 && (_strlen(arr_token[0]) ==
 												   _strlen("unsetenv")))
 	{
-		_unsetenv(arr_token[1]);
+		*exit_ptr = _unsetenv(arr_token[1]);
 		/*Error already handled and printed in _unsetenv*/
 		free_mem(index_ptr, arr_token);
-		return (0);
+		return (*exit_ptr);
 	}
 	if (_strcmp(arr_token[0], "cd") == 0)
 	{
-		_is_cd(arr_token);
+		*exit_ptr = _is_cd(arr_token, p_name, line_counter);
 		free_mem(index_ptr, arr_token);
-		return (0);
+		return (*exit_ptr);
 	}
 	return (execute_process(arr_token, index_ptr, p_name, line_counter,
 	exit_ptr));
@@ -154,7 +152,7 @@ int execute_process(char *arr_token[], int *index_ptr, char *p_name,
 	{
 		handle_errors(p_name, line_counter, arr_token[0]);
 		free_mem(index_ptr, arr_token);
-		return (1);
+			return (127);
 	}
 	if (_strcmp(command_path, arr_token[0]) == 0)
 		flag_command = 1;
