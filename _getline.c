@@ -1,7 +1,5 @@
 #include "main.h"
 
-size_t _getline_support(size_t *length, char buff[],
-char **lineptr);
 /**
  * _fileno - examines the argument stream and returns the integer file
  * descriptor  used  to implement this stream.
@@ -29,7 +27,7 @@ ssize_t _getline(char **lineptr, size_t *length, FILE *stream)
 {
 	char c;
 	ssize_t nof_read;
-	static char buff[1024];
+	static char buff[10000];
 	static unsigned int buff_size, buff_pos;
 
 	*length = 0;
@@ -37,7 +35,7 @@ ssize_t _getline(char **lineptr, size_t *length, FILE *stream)
 	{
 		if (buff_pos >= buff_size)
 		{
-			nof_read = read(_fileno(stream), buff, 1024);
+			nof_read = read(_fileno(stream), buff, sizeof(buff));
 			if (nof_read == -1)
 			{
 				perror("Error");
